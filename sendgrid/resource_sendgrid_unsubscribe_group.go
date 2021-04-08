@@ -19,10 +19,10 @@ package sendgrid
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	sendgrid "github.com/trois-six/terraform-provider-sendgrid/sdk"
 )
 
@@ -96,6 +96,7 @@ func resourceSendgridUnsubscribeGroupRead(_ context.Context, d *schema.ResourceD
 	if err := sendgridUnsubscribeGroupParse(group, d); err != nil {
 		return diag.FromErr(err)
 	}
+
 	return nil
 }
 
@@ -103,16 +104,16 @@ func sendgridUnsubscribeGroupParse(group *sendgrid.UnsubscribeGroup, d *schema.R
 	if err := d.Set("name", group.Name); err != nil {
 		return err
 	}
+
 	if err := d.Set("description", group.Description); err != nil {
 		return err
 	}
+
 	if err := d.Set("is_default", group.IsDefault); err != nil {
 		return err
 	}
-	if err := d.Set("unsubscribes", group.Unsubscribes); err != nil {
-		return err
-	}
-	return nil
+
+	return d.Set("unsubscribes", group.Unsubscribes)
 }
 
 func resourceSendgridUnsubscribeGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

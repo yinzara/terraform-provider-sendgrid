@@ -134,8 +134,10 @@ func resourceSendgridTemplateVersionCreate(_ context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 
-	//nolint:errcheck
-	d.Set("updated_at", templateVersion.UpdatedAt)
+	if err := d.Set("updated_at", templateVersion.UpdatedAt); err != nil {
+		return diag.FromErr(err)
+	}
+
 	d.SetId(templateVersion.ID)
 
 	return nil
@@ -152,6 +154,7 @@ func resourceSendgridTemplateVersionRead(_ context.Context, d *schema.ResourceDa
 	if er := parseTemplateVersion(d, templateVersion); er != nil {
 		return diag.FromErr(er)
 	}
+
 	return nil
 }
 
@@ -159,34 +162,40 @@ func parseTemplateVersion(d *schema.ResourceData, templateVersion *sendgrid.Temp
 	if err := d.Set("updated_at", templateVersion.UpdatedAt); err != nil {
 		return err
 	}
+
 	if err := d.Set("thumbnail_url", templateVersion.ThumbnailURL); err != nil {
 		return err
 	}
+
 	if err := d.Set("active", templateVersion.Active); err != nil {
 		return err
 	}
+
 	if err := d.Set("name", templateVersion.Name); err != nil {
 		return err
 	}
+
 	if err := d.Set("html_content", templateVersion.HTMLContent); err != nil {
 		return err
 	}
+
 	if err := d.Set("plain_content", templateVersion.PlainContent); err != nil {
 		return err
 	}
+
 	if err := d.Set("generate_plain_content", templateVersion.GeneratePlainContent); err != nil {
 		return err
 	}
+
 	if err := d.Set("subject", templateVersion.Subject); err != nil {
 		return err
 	}
+
 	if err := d.Set("editor", templateVersion.Editor); err != nil {
 		return err
 	}
-	if err := d.Set("test_data", templateVersion.TestData); err != nil {
-		return err
-	}
-	return nil
+
+	return d.Set("test_data", templateVersion.TestData)
 }
 
 func resourceSendgridTemplateVersionUpdate(
@@ -253,7 +262,7 @@ func resourceSendgridTemplateVersionDelete(_ context.Context, d *schema.Resource
 }
 
 func resourceSendgridTemplateVersionImport(
-	ctx context.Context,
+	_ context.Context,
 	d *schema.ResourceData,
 	_ interface{},
 ) ([]*schema.ResourceData, error) {
@@ -262,8 +271,10 @@ func resourceSendgridTemplateVersionImport(
 		return nil, ErrInvalidImportFormat
 	}
 
-	//nolint:errcheck
-	d.Set("template_id", parts[0])
+	if err := d.Set("template_id", parts[0]); err != nil {
+		return nil, err
+	}
+
 	d.SetId(parts[1])
 
 	return []*schema.ResourceData{d}, nil

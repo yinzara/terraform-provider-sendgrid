@@ -26,6 +26,7 @@ import (
 	sendgrid "github.com/trois-six/terraform-provider-sendgrid/sdk"
 )
 
+//nolint:funlen
 func resourceSendgridDomainAuthentication() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceSendgridDomainAuthenticationCreate,
@@ -155,7 +156,7 @@ func resourceSendgridDomainAuthenticationCreate(ctx context.Context, d *schema.R
 	return resourceSendgridDomainAuthenticationRead(ctx, d, m)
 }
 
-func resourceSendgridDomainAuthenticationRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceSendgridDomainAuthenticationRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { //nolint:cyclop
 	c := m.(*sendgrid.Client)
 
 	auth, err := c.ReadDomainAuthentication(d.Id())
@@ -163,58 +164,71 @@ func resourceSendgridDomainAuthenticationRead(_ context.Context, d *schema.Resou
 		return diag.FromErr(err.Err)
 	}
 
-	//nolint:errcheck
-	d.Set("domain", auth.Domain)
-	//nolint:errcheck
-	d.Set("subdomain", auth.Subdomain)
-	//nolint:errcheck
-	d.Set("username", auth.Username)
-	//nolint:errcheck
-	d.Set("is_default", auth.IsDefault)
-	//nolint:errcheck
-	d.Set("custom_spf", auth.CustomSPF)
-	//nolint:errcheck
-	d.Set("custom_dkim_selector", auth.CustomDKIMSelector)
-	//nolint:errcheck
-	d.Set("valid", auth.Valid)
+	if err := d.Set("domain", auth.Domain); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("subdomain", auth.Subdomain); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("username", auth.Username); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("is_default", auth.IsDefault); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("custom_spf", auth.CustomSPF); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("custom_dkim_selector", auth.CustomDKIMSelector); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("valid", auth.Valid); err != nil {
+		return diag.FromErr(err)
+	}
 
 	ips := make([]interface{}, len(auth.IPs))
 	for idx, ip := range auth.IPs {
 		ips[idx] = ip
 	}
-	if er := d.Set("ips", schema.NewSet(d.Get("ips").(*schema.Set).F, ips)); er != nil {
-		return diag.FromErr(er)
+
+	if err := d.Set("ips", schema.NewSet(d.Get("ips").(*schema.Set).F, ips)); err != nil {
+		return diag.FromErr(err)
 	}
 
 	dns := make([]interface{}, 0)
-	if auth.Dns.DKIM1.Type != "" {
-		dns = append(dns, map[string]interface{}{
-			"type":  auth.Dns.DKIM1.Type,
-			"valid": auth.Dns.DKIM1.Valid,
-			"host":  auth.Dns.DKIM1.Host,
-			"data":  auth.Dns.DKIM1.Data,
-		})
+
+	if auth.DNS.DKIM1.Type != "" {
+		dns = append(dns, makeDomainAuthDNSRecord(auth.DNS.DKIM1))
 	}
-	if auth.Dns.DKIM2.Type != "" {
-		dns = append(dns, map[string]interface{}{
-			"type":  auth.Dns.DKIM2.Type,
-			"valid": auth.Dns.DKIM2.Valid,
-			"host":  auth.Dns.DKIM2.Host,
-			"data":  auth.Dns.DKIM2.Data,
-		})
+
+	if auth.DNS.DKIM2.Type != "" {
+		dns = append(dns, makeDomainAuthDNSRecord(auth.DNS.DKIM2))
 	}
-	if auth.Dns.MailCNAME.Type != "" {
-		dns = append(dns, map[string]interface{}{
-			"type":  auth.Dns.MailCNAME.Type,
-			"valid": auth.Dns.MailCNAME.Valid,
-			"host":  auth.Dns.MailCNAME.Host,
-			"data":  auth.Dns.MailCNAME.Data,
-		})
+
+	if auth.DNS.MailCNAME.Type != "" {
+		dns = append(dns, makeDomainAuthDNSRecord(auth.DNS.MailCNAME))
 	}
-	if er := d.Set("dns", dns); er != nil {
-		return diag.FromErr(er)
+
+	if err := d.Set("dns", dns); err != nil {
+		return diag.FromErr(err)
 	}
+
 	return nil
+}
+
+func makeDomainAuthDNSRecord(dns sendgrid.DomainAuthenticationDNSValue) map[string]interface{} {
+	return map[string]interface{}{
+		"type":  dns.Type,
+		"valid": dns.Valid,
+		"host":  dns.Host,
+		"data":  dns.Data,
+	}
 }
 
 func resourceSendgridDomainAuthenticationUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -234,9 +248,9 @@ func resourceSendgridDomainAuthenticationUpdate(ctx context.Context, d *schema.R
 		if err := c.ValidateDomainAuthentication(d.Id()); err.Err != nil || err.StatusCode != 200 {
 			if err.Err != nil {
 				return diag.FromErr(err.Err)
-			} else {
-				return diag.Errorf("unable to validate domain DNS configuration")
 			}
+
+			return diag.Errorf("unable to validate domain DNS configuration")
 		}
 	}
 

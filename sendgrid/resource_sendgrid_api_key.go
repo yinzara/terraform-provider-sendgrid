@@ -20,11 +20,11 @@ package sendgrid
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"reflect"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	sendgrid "github.com/trois-six/terraform-provider-sendgrid/sdk"
 )
 
@@ -96,8 +96,10 @@ func resourceSendgridAPIKeyCreate(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	d.SetId(apiKey.ID)
-	//nolint:errcheck
-	d.Set("api_key", apiKey.APIKey)
+
+	if err := d.Set("api_key", apiKey.APIKey); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return resourceSendgridAPIKeyRead(ctx, d, m)
 }
@@ -110,10 +112,13 @@ func resourceSendgridAPIKeyRead(_ context.Context, d *schema.ResourceData, m int
 		return diag.FromErr(err.Err)
 	}
 
-	//nolint:errcheck
-	d.Set("name", apiKey.Name)
-	//nolint:errcheck
-	d.Set("scopes", apiKey.Scopes)
+	if err := d.Set("name", apiKey.Name); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("scopes", apiKey.Scopes); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }

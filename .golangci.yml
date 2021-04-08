@@ -26,6 +26,10 @@ linters:
     - interfacer
     - maligned
     - forcetypeassert
+    - wrapcheck
+    - funlen
+    - lll
+    - scopelint
 
 issues:
   exclude-rules:

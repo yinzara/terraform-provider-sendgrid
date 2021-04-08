@@ -81,6 +81,7 @@ func (c *Client) ReadTemplates(generation string) ([]Template, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed reading template: %w", err)
 	}
+
 	return parseTemplates(respBody)
 }
 

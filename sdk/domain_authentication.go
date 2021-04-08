@@ -6,20 +6,20 @@ import (
 	"net/http"
 )
 
-type DomainAuthenticationDns struct {
-	MailCNAME DomainAuthenticationDnsValue `json:"mail_cname,omitempty"`
-	DKIM1     DomainAuthenticationDnsValue `json:"dkim1,omitempty"`
-	DKIM2     DomainAuthenticationDnsValue `json:"dkim2,omitempty"`
+type DomainAuthenticationDNS struct {
+	MailCNAME DomainAuthenticationDNSValue `json:"mail_cname,omitempty"`
+	DKIM1     DomainAuthenticationDNSValue `json:"dkim1,omitempty"`
+	DKIM2     DomainAuthenticationDNSValue `json:"dkim2,omitempty"`
 }
 
-type DomainAuthenticationDnsValue struct {
+type DomainAuthenticationDNSValue struct {
 	Valid bool   `json:"valid,omitempty"`
 	Type  string `json:"type,omitempty"`
 	Host  string `json:"host,omitempty"`
 	Data  string `json:"data,omitempty"`
 }
 
-// DomainAuthentication is a Sendgrid domain authentication
+// DomainAuthentication is a Sendgrid domain authentication.
 type DomainAuthentication struct {
 	ID                 int32                   `json:"id,omitempty"`
 	UserID             int32                   `json:"user_id,omitempty"`
@@ -33,7 +33,7 @@ type DomainAuthentication struct {
 	CustomDKIMSelector string                  `json:"custom_dkim_selector"`
 	Legacy             bool                    `json:"legacy,omitempty"`
 	Valid              bool                    `json:"valid,omitempty"`
-	Dns                DomainAuthenticationDns `json:"dns,omitempty"`
+	DNS                DomainAuthenticationDNS `json:"dns,omitempty"`
 }
 
 func parseDomainAuthentication(respBody string) (*DomainAuthentication, RequestError) {

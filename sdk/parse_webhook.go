@@ -9,7 +9,7 @@ import (
 // ParseWebhook is a Sendgrid inbound parse settings.
 type ParseWebhook struct {
 	Hostname  string `json:"hostname,omitempty"`
-	Url       string `json:"url,omitempty"`
+	URL       string `json:"url,omitempty"`
 	SpamCheck bool   `json:"spam_check"`
 	SendRaw   bool   `json:"send_raw"`
 }
@@ -34,16 +34,17 @@ func (c *Client) CreateParseWebhook(hostname string, url string, spamCheck bool,
 			Err:        ErrHostnameRequired,
 		}
 	}
+
 	if url == "" {
 		return nil, RequestError{
 			StatusCode: http.StatusInternalServerError,
-			Err:        ErrUrlRequired,
+			Err:        ErrURLRequired,
 		}
 	}
 
 	respBody, statusCode, err := c.Post("POST", "/user/webhooks/parse/settings", ParseWebhook{
 		Hostname:  hostname,
-		Url:       url,
+		URL:       url,
 		SpamCheck: spamCheck,
 		SendRaw:   sendRaw,
 	})

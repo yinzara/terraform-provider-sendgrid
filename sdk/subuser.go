@@ -2,7 +2,6 @@ package sendgrid
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -161,6 +160,7 @@ func (c *Client) UpdateSubuserIPs(username string, ips []string) RequestError {
 			Err:        fmt.Errorf("failed updating subUser Ips: %w", err),
 		}
 	}
+
 	return RequestError{StatusCode: http.StatusOK, Err: nil}
 }
 
@@ -174,7 +174,7 @@ func (c *Client) DeleteSubuser(username string) (bool, RequestError) {
 	if err != nil {
 		return false, RequestError{
 			StatusCode: http.StatusInternalServerError,
-			Err:        fmt.Errorf("failed deleting subUser: %w", err),
+			Err:        ErrFailedDeletingSubUser,
 		}
 	}
 
@@ -190,7 +190,7 @@ func (c *Client) DeleteSubuser(username string) (bool, RequestError) {
 
 func (c *Client) UpdateSubuserPassword(username string, oldPassword string, newPassword string) RequestError {
 	if newPassword == "" {
-		return RequestError{StatusCode: http.StatusBadRequest, Err: errors.New("new password must be non empty")}
+		return RequestError{StatusCode: http.StatusBadRequest, Err: ErrNewPasswordRequired}
 	}
 
 	origOnBehalfOf := c.OnBehalfOf

@@ -131,12 +131,17 @@ func resourceSendgridSubuserRead(_ context.Context, d *schema.ResourceData, m in
 		return diag.FromErr(subUserNotFound(d.Id()))
 	}
 
-	//nolint:errcheck
-	d.Set("user_id", subUser[0].ID)
-	//nolint:errcheck
-	d.Set("disabled", subUser[0].Disabled)
-	//nolint:errcheck
-	d.Set("email", subUser[0].Email)
+	if err := d.Set("user_id", subUser[0].ID); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("disabled", subUser[0].Disabled); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("email", subUser[0].Email); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }
@@ -157,6 +162,7 @@ func resourceSendgridSubuserUpdate(ctx context.Context, d *schema.ResourceData, 
 		for _, ip := range ipsSet {
 			ips = append(ips, ip.(string))
 		}
+
 		if requestErr := c.UpdateSubuserIPs(d.Id(), ips); requestErr.Err != nil {
 			return diag.FromErr(requestErr.Err)
 		}

@@ -93,14 +93,21 @@ func resourceSendgridParseWebhookRead(_ context.Context, d *schema.ResourceData,
 		return diag.FromErr(err.Err)
 	}
 
-	//nolint:errcheck
-	d.Set("hostname", webhook.Hostname)
-	//nolint:errcheck
-	d.Set("url", webhook.Url)
-	//nolint:errcheck
-	d.Set("spam_check", webhook.SpamCheck)
-	//nolint:errcheck
-	d.Set("send_raw", webhook.SendRaw)
+	if err := d.Set("hostname", webhook.Hostname); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("url", webhook.URL); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("spam_check", webhook.SpamCheck); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("send_raw", webhook.SendRaw); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }

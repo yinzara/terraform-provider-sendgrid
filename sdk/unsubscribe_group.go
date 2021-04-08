@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// UnsubscribeGroup is a Sendgrid - Suppressions - Unsubscribe Group
+// UnsubscribeGroup is a Sendgrid - Suppressions - Unsubscribe Group.
 type UnsubscribeGroup struct {
 	ID           int32  `json:"id,omitempty"`
 	Name         string `json:"name,omitempty"`
@@ -92,7 +92,6 @@ func (c *Client) ReadUnsubscribeGroup(id string) (*UnsubscribeGroup, RequestErro
 
 // ReadUnsubscribeGroups retrieves all UnsubscribeGroup and returns them.
 func (c *Client) ReadUnsubscribeGroups() ([]UnsubscribeGroup, RequestError) {
-
 	respBody, _, err := c.Get("GET", "/asm/groups")
 	if err != nil {
 		return nil, RequestError{
@@ -116,9 +115,11 @@ func (c *Client) UpdateUnsubscribeGroup(id string, name string, description stri
 	t := UnsubscribeGroup{}
 	t.Name = name
 	t.IsDefault = isDefault
+
 	if len(description) > 0 {
 		t.Description = description
 	}
+
 	respBody, _, err := c.Post("PATCH", "/asm/groups/"+id, t)
 	if err != nil {
 		return nil, RequestError{

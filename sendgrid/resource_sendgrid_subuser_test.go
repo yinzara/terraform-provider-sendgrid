@@ -17,9 +17,9 @@ func TestAccSendgridSubuserBasic(t *testing.T) {
 	ips := []string{"127.0.0.1", "255.255.255.255"}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckSendgridSubuserDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckSendgridSubuserDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckSendgridSubuserConfigBasic(username, password, email, ips),

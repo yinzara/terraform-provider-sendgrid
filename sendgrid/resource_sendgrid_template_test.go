@@ -15,9 +15,9 @@ func TestAccSendgridTemplateBasic(t *testing.T) {
 	generation := "dynamic"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckSendgridTemplateDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckSendgridTemplateDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckSendgridTemplateConfigBasic(name, generation),
@@ -62,11 +62,11 @@ func testAccCheckSendgridTemplateExists(n string) resource.TestCheckFunc {
 		rs, ok := s.RootModule().Resources[n]
 
 		if !ok {
-			return fmt.Errorf("Not found: %s", n)
+			return fmt.Errorf("not found: %s", n)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No templateID set")
+			return fmt.Errorf("no templateID set")
 		}
 
 		return nil

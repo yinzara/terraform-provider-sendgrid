@@ -16,9 +16,9 @@ func TestAccSendgridTemplateVersionBasic(t *testing.T) {
 	subject := "terraform-subject-" + acctest.RandString(10)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckSendgridTemplateVersionDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckSendgridTemplateVersionDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckSendgridTemplateVersionConfigBasic(
@@ -75,11 +75,11 @@ func testAccCheckSendgridTemplateVersionExists(n string) resource.TestCheckFunc 
 		rs, ok := s.RootModule().Resources[n]
 
 		if !ok {
-			return fmt.Errorf("Not found: %s", n)
+			return fmt.Errorf("not found: %s", n)
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("No templateVersionID set")
+			return fmt.Errorf("no templateVersionID set")
 		}
 
 		return nil

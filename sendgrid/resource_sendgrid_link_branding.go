@@ -127,38 +127,49 @@ func resourceSendgridLinkBrandingRead(_ context.Context, d *schema.ResourceData,
 		return diag.FromErr(err.Err)
 	}
 
-	//nolint:errcheck
-	d.Set("domain", link.Domain)
-	//nolint:errcheck
-	d.Set("subdomain", link.Subdomain)
-	//nolint:errcheck
-	d.Set("username", link.Username)
-	//nolint:errcheck
-	d.Set("is_default", link.IsDefault)
-	//nolint:errcheck
-	d.Set("valid", link.Valid)
+	if err := d.Set("domain", link.Domain); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("subdomain", link.Subdomain); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("username", link.Username); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("is_default", link.IsDefault); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("valid", link.Valid); err != nil {
+		return diag.FromErr(err)
+	}
 
 	dns := make([]interface{}, 0)
-	if link.Dns.DomainCNAME.Type != "" {
-		dns = append(dns, map[string]interface{}{
-			"type":  link.Dns.DomainCNAME.Type,
-			"valid": link.Dns.DomainCNAME.Valid,
-			"host":  link.Dns.DomainCNAME.Host,
-			"data":  link.Dns.DomainCNAME.Data,
-		})
+	if link.DNS.DomainCNAME.Type != "" {
+		dns = append(dns, makeLinkBrandingDNSRecord(link.DNS.DomainCNAME))
 	}
-	if link.Dns.OwnerCNAME.Type != "" {
-		dns = append(dns, map[string]interface{}{
-			"type":  link.Dns.OwnerCNAME.Type,
-			"valid": link.Dns.OwnerCNAME.Valid,
-			"host":  link.Dns.OwnerCNAME.Host,
-			"data":  link.Dns.OwnerCNAME.Data,
-		})
+
+	if link.DNS.OwnerCNAME.Type != "" {
+		dns = append(dns, makeLinkBrandingDNSRecord(link.DNS.OwnerCNAME))
 	}
-	if er := d.Set("dns", dns); er != nil {
-		return diag.FromErr(er)
+
+	if err := d.Set("dns", dns); err != nil {
+		return diag.FromErr(err)
 	}
+
 	return nil
+}
+
+func makeLinkBrandingDNSRecord(dns sendgrid.LinkBrandingDNSValue) map[string]interface{} {
+	return map[string]interface{}{
+		"type":  dns.Type,
+		"valid": dns.Valid,
+		"host":  dns.Host,
+		"data":  dns.Data,
+	}
 }
 
 func resourceSendgridLinkBrandingUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -177,9 +188,9 @@ func resourceSendgridLinkBrandingUpdate(ctx context.Context, d *schema.ResourceD
 		if err := c.ValidateLinkBranding(d.Id()); err.Err != nil || err.StatusCode != 200 {
 			if err.Err != nil {
 				return diag.FromErr(err.Err)
-			} else {
-				return diag.Errorf("unable to validate link branding DNS configuration")
 			}
+
+			return diag.Errorf("unable to validate link branding DNS configuration")
 		}
 	}
 

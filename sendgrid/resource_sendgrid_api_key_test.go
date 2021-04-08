@@ -15,9 +15,9 @@ func TestAccSendgridAPIKeyBasic(t *testing.T) {
 	scopes := []string{"mail.send", "sender_verification_eligible"}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckSendgridAPIKeyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckSendgridAPIKeyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckSendgridAPIKeyConfigBasic(name, scopes),

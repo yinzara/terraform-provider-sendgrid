@@ -146,7 +146,7 @@ func resourceSendgridEventWebhook() *schema.Resource {
 	}
 }
 
-func resourceSendgridEventWebhookDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceSendgridEventWebhookDelete(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	// no op as there is no way to delete it
 	return nil
 }
@@ -167,12 +167,12 @@ func resourceSendgridEventWebhookPatch(ctx context.Context, d *schema.ResourceDa
 	open := d.Get("open").(bool)
 	click := d.Get("click").(bool)
 	dropped := d.Get("dropped").(bool)
-	oauthClientId := d.Get("oauth_client_id").(string)
+	oauthClientID := d.Get("oauth_client_id").(string)
 	oauthClientSecret := d.Get("oauth_client_secret").(string)
-	oauthTokenUrl := d.Get("oauth_token_url").(string)
+	oauthTokenURL := d.Get("oauth_token_url").(string)
 
 	_, err := sendgrid.RetryOnRateLimit(ctx, d, func() (interface{}, sendgrid.RequestError) {
-		return c.PatchEventWebhook(enabled, url, groupResubscribe, delivered, groupUnsubscribe, spamReport, bounce, deferred, unsubscribe, processed, open, click, dropped, oauthClientId, oauthClientSecret, oauthTokenUrl)
+		return c.PatchEventWebhook(enabled, url, groupResubscribe, delivered, groupUnsubscribe, spamReport, bounce, deferred, unsubscribe, processed, open, click, dropped, oauthClientID, oauthClientSecret, oauthTokenURL)
 	})
 	if err != nil {
 		return diag.FromErr(err)
@@ -193,7 +193,7 @@ func resourceSendgridEventWebhookPatch(ctx context.Context, d *schema.ResourceDa
 	return resourceSendgridEventWebhookRead(ctx, d, m)
 }
 
-func resourceSendgridEventWebhookRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceSendgridEventWebhookRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { //nolint:cyclop
 	c := m.(*sendgrid.Client)
 
 	webhook, err := c.ReadEventWebhook()
@@ -201,45 +201,78 @@ func resourceSendgridEventWebhookRead(_ context.Context, d *schema.ResourceData,
 		return diag.FromErr(err.Err)
 	}
 
-	//nolint:errcheck
-	d.Set("enabled", webhook.Enabled)
-	//nolint:errcheck
-	d.Set("url", webhook.Url)
-	//nolint:errcheck
-	d.Set("group_resubscribe", webhook.GroupResubscribe)
-	//nolint:errcheck
-	d.Set("delivered", webhook.Delivered)
-	//nolint:errcheck
-	d.Set("group_unsubscribe", webhook.GroupUnsubscribe)
-	//nolint:errcheck
-	d.Set("spam_report", webhook.SpamReport)
-	//nolint:errcheck
-	d.Set("bounce", webhook.Bounce)
-	//nolint:errcheck
-	d.Set("deferred", webhook.Delivered)
-	//nolint:errcheck
-	d.Set("unsubscribe", webhook.Unsubscribe)
-	//nolint:errcheck
-	d.Set("processed", webhook.Processed)
-	//nolint:errcheck
-	d.Set("open", webhook.Open)
-	//nolint:errcheck
-	d.Set("click", webhook.Click)
-	//nolint:errcheck
-	d.Set("dropped", webhook.Dropped)
-	//nolint:errcheck
-	d.Set("oauth_client_id", webhook.OAuthClientId)
-	//nolint:errcheck
-	d.Set("oauth_token_url", webhook.OAuthTokenUrl)
+	if err := d.Set("enabled", webhook.Enabled); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("url", webhook.URL); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("group_resubscribe", webhook.GroupResubscribe); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("delivered", webhook.Delivered); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("group_unsubscribe", webhook.GroupUnsubscribe); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("spam_report", webhook.SpamReport); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("bounce", webhook.Bounce); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("deferred", webhook.Delivered); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("unsubscribe", webhook.Unsubscribe); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("processed", webhook.Processed); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("open", webhook.Open); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("click", webhook.Click); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("dropped", webhook.Dropped); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("oauth_client_id", webhook.OAuthClientID); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("oauth_token_url", webhook.OAuthTokenURL); err != nil {
+		return diag.FromErr(err)
+	}
 
 	webhookSigning, err := c.ReadEventWebhookSigning()
 	if err.Err != nil {
 		return diag.FromErr(err.Err)
 	}
-	//nolint:errcheck
-	d.Set("public_key", webhookSigning.PublicKey)
-	//nolint:errcheck
-	d.Set("signed", webhookSigning.PublicKey != "")
+
+	if err := d.Set("public_key", webhookSigning.PublicKey); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err := d.Set("signed", webhookSigning.PublicKey != ""); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
 }
